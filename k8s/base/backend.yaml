@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: seq-lams-backend
+spec:
+  selector:
+    app: seq-lams-backend
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seq-lams-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: seq-lams-backend
+  template:
+    metadata:
+      labels:
+        app: seq-lams-backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+        - name: backend
+          image: seq-lams-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: SERVER_PORT
+            - name: APP_FRONTEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: APP_FRONTEND_URL
+            - name: APP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: seq-lams-secrets
+                  key: APP_JWT_SECRET
+            - name: APP_MESSAGING_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: APP_MESSAGING_ENABLED
+            - name: APP_ANALYTICS_OLAP_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: APP_ANALYTICS_OLAP_ENABLED
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: SPRING_DATASOURCE_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seq-lams-secrets
+                  key: POSTGRES_PASSWORD
+            - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+              value: org.postgresql.Driver
+            - name: SPRING_DATA_REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: SPRING_DATA_REDIS_HOST
+            - name: SPRING_DATA_REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: SPRING_DATA_REDIS_PORT
+            - name: SPRING_DATA_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seq-lams-secrets
+                  key: REDIS_PASSWORD
+            - name: SPRING_DATA_REDIS_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: SPRING_DATA_REDIS_TIMEOUT
+            - name: SPRING_RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: SPRING_RABBITMQ_HOST
+            - name: SPRING_RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: SPRING_RABBITMQ_PORT
+            - name: SPRING_RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: seq-lams-secrets
+                  key: RABBITMQ_USERNAME
+            - name: SPRING_RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seq-lams-secrets
+                  key: RABBITMQ_PASSWORD
+            - name: CLICKHOUSE_JDBC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: CLICKHOUSE_JDBC_URL
+            - name: CLICKHOUSE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: CLICKHOUSE_USERNAME
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seq-lams-secrets
+                  key: CLICKHOUSE_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: 250m
+              memory: 384Mi
+            limits:
+              cpu: 1
+              memory: 768Mi

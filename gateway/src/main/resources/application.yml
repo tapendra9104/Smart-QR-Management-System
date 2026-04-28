@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: seq-lams-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          x-forwarded:
+            for-enabled: false
+          routes:
+            - id: backend-api
+              uri: ${GATEWAY_BACKEND_URL:http://localhost:8080}
+              predicates:
+                - Path=/api/v1/**
+              filters:
+                - PreserveHostHeader
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - ${APP_FRONTEND_URL:http://localhost:3000}
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders:
+                  - "*"
+                allowCredentials: true
+
+server:
+  port: ${SERVER_PORT:8081}
+  forward-headers-strategy: framework
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus

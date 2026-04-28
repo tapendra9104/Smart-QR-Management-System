@@ -1,0 +1,45 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./.local-db/seqlams;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  data:
+    redis:
+      repositories:
+        enabled: false
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+  cache:
+    type: simple
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      write-dates-as-timestamps: false
+
+app:
+  jwt:
+    secret: Q2hhbmdlVGhpc0RldlNlY3JldEtleUZvclByb2R1Y3Rpb25Ub2tlblNpZ25pbmcxMjM0NTY=
+  rate-limit:
+    enabled: false
+  messaging:
+    enabled: false
+  analytics:
+    olap-enabled: false
+
+management:
+  health:
+    mail:
+      enabled: false
+    redis:
+      enabled: false
+    rabbit:
+      enabled: false

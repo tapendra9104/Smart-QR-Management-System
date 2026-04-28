@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: seq-lams-frontend
+spec:
+  selector:
+    app: seq-lams-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seq-lams-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: seq-lams-frontend
+  template:
+    metadata:
+      labels:
+        app: seq-lams-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: seq-lams-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: HOSTNAME
+              value: 0.0.0.0
+            - name: PORT
+              value: "3000"
+            - name: NEXT_TELEMETRY_DISABLED
+              value: "1"
+            - name: BACKEND_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: seq-lams-config
+                  key: BACKEND_API_URL
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 150m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

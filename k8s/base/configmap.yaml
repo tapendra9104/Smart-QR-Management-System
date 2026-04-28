@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: seq-lams-config
+data:
+  APP_FRONTEND_URL: https://seq-lams.example.com
+  BACKEND_API_URL: http://seq-lams-gateway:8081
+  GATEWAY_BACKEND_URL: http://seq-lams-backend:8080
+  APP_MESSAGING_ENABLED: "true"
+  APP_ANALYTICS_OLAP_ENABLED: "true"
+  POSTGRES_DB: seqlams
+  SPRING_DATASOURCE_URL: jdbc:postgresql://seq-lams-postgres:5432/seqlams
+  SPRING_DATASOURCE_USERNAME: seq_lams
+  SPRING_DATA_REDIS_HOST: seq-lams-redis
+  SPRING_DATA_REDIS_PORT: "6379"
+  SPRING_DATA_REDIS_TIMEOUT: 5s
+  SPRING_RABBITMQ_HOST: seq-lams-rabbitmq
+  SPRING_RABBITMQ_PORT: "5672"
+  CLICKHOUSE_JDBC_URL: jdbc:clickhouse://seq-lams-clickhouse:8123/default
+  CLICKHOUSE_USERNAME: default
+  SERVER_PORT: "8080"

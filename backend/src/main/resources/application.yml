@@ -1,0 +1,109 @@
+spring:
+  application:
+    name: qr-manager-platform
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/seqlams}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.postgresql.Driver}
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      password: ${SPRING_DATA_REDIS_PASSWORD:}
+      timeout: ${SPRING_DATA_REDIS_TIMEOUT:5s}
+      repositories:
+        enabled: false
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        default-requeue-rejected: false
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+  cache:
+    type: redis
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      write-dates-as-timestamps: false
+  mail:
+    host: ${SPRING_MAIL_HOST:localhost}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME:}
+    password: ${SPRING_MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: ${SERVER_PORT:8080}
+  forward-headers-strategy: none
+
+management:
+  health:
+    mail:
+      enabled: ${APP_MAIL_ENABLED:false}
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+app:
+  frontend-url: ${APP_FRONTEND_URL:http://localhost:3000}
+  jwt:
+    secret: ${APP_JWT_SECRET}
+    access-token-ttl-minutes: ${APP_JWT_ACCESS_TOKEN_TTL_MINUTES:1440}
+    refresh-token-ttl-days: ${APP_JWT_REFRESH_TOKEN_TTL_DAYS:7}
+  redirect:
+    signing-secret: ${APP_REDIRECT_SIGNING_SECRET:}
+    require-signature: ${APP_REQUIRE_SIGNED_REDIRECTS:true}
+  rate-limit:
+    enabled: ${APP_RATE_LIMIT_ENABLED:true}
+    auth-requests-per-minute: ${APP_RATE_LIMIT_AUTH_REQUESTS_PER_MINUTE:20}
+    public-resolve-requests-per-minute: ${APP_RATE_LIMIT_PUBLIC_RESOLVE_REQUESTS_PER_MINUTE:240}
+  retention:
+    scan-events-days: ${APP_RETENTION_SCAN_EVENTS_DAYS:365}
+    audit-logs-days: ${APP_RETENTION_AUDIT_LOGS_DAYS:730}
+    refresh-tokens-days: ${APP_RETENTION_REFRESH_TOKENS_DAYS:30}
+  messaging:
+    enabled: ${APP_MESSAGING_ENABLED:false}
+  analytics:
+    olap-enabled: ${APP_ANALYTICS_OLAP_ENABLED:false}
+    click-house:
+      jdbc-url: ${CLICKHOUSE_JDBC_URL:jdbc:clickhouse://localhost:8123/default}
+      username: ${CLICKHOUSE_USERNAME:default}
+      password: ${CLICKHOUSE_PASSWORD:}
+  mail:
+    enabled: ${APP_MAIL_ENABLED:false}
+    from-address: ${APP_MAIL_FROM_ADDRESS:noreply@qrmanager.app}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    tagsSorter: alpha
+    tryItOutEnabled: true
+  api-docs:
+    path: /v3/api-docs
+  paths-to-match: /api/**

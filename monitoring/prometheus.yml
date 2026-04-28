@@ -1,0 +1,18 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Spring Boot backend — exposes /actuator/prometheus
+  - job_name: qr-manager-backend
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['backend:8080']
+        labels:
+          service: backend
+          env: local
+
+  # Prometheus self-monitoring
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']

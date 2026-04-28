@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: seq-lams
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: seq-lams.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: seq-lams-frontend
+                port:
+                  number: 80
