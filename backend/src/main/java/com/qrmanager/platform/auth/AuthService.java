@@ -44,12 +44,13 @@ public class AuthService {
 
     @Transactional
     public AuthTokensResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmailIgnoreCase(request.email())) {
+        String email = request.email().trim().toLowerCase();
+        if (userRepository.existsByEmailIgnoreCase(email)) {
             throw new BadRequestException("An account with this email already exists");
         }
 
         User user = userRepository.save(User.builder()
-            .email(request.email().trim().toLowerCase())
+            .email(email)
             .fullName(request.fullName())
             .passwordHash(passwordEncoder.encode(request.password()))
             .role(Role.USER)

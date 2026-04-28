@@ -31,6 +31,7 @@ public class JwtService {
         Instant expiresAt = now.plus(appProperties.jwt().accessTokenTtlMinutes(), ChronoUnit.MINUTES);
 
         return Jwts.builder()
+            .id(UUID.randomUUID().toString())
             .subject(user.getId().toString())
             .claim("email", user.getEmail())
             .claim("role", user.getRole().name())

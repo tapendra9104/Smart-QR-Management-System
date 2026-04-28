@@ -92,7 +92,7 @@ class AuthServiceTests {
         @DisplayName("Happy path: saves user and returns tokens")
         void happyPath() {
             UUID userId = UUID.randomUUID();
-            RegisterRequest req = new RegisterRequest("New User", "new@example.com", "Password1!");
+            RegisterRequest req = new RegisterRequest("new@example.com", "Password1!", "New User");
 
             when(userRepository.existsByEmailIgnoreCase("new@example.com")).thenReturn(false);
             when(passwordEncoder.encode("Password1!")).thenReturn("hashed-pw");
@@ -111,7 +111,7 @@ class AuthServiceTests {
         @Test
         @DisplayName("Throws BadRequestException when email already exists")
         void duplicateEmail() {
-            RegisterRequest req = new RegisterRequest("Existing", "exists@example.com", "Password1!");
+            RegisterRequest req = new RegisterRequest("exists@example.com", "Password1!", "Existing");
             when(userRepository.existsByEmailIgnoreCase("exists@example.com")).thenReturn(true);
 
             assertThatThrownBy(() -> authService.register(req))
@@ -124,7 +124,7 @@ class AuthServiceTests {
         @Test
         @DisplayName("Email is normalised to lowercase before saving")
         void normalisesEmail() {
-            RegisterRequest req = new RegisterRequest("User", "MiXeD@Example.COM", "Password1!");
+            RegisterRequest req = new RegisterRequest("MiXeD@Example.COM", "Password1!", "User");
             when(userRepository.existsByEmailIgnoreCase("mixed@example.com")).thenReturn(false);
             when(passwordEncoder.encode(any())).thenReturn("hashed");
 

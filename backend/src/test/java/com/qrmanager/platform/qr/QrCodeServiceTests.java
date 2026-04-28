@@ -212,8 +212,6 @@ class QrCodeServiceTests {
         void propagatesUsageLimitException() {
             UUID userId = UUID.randomUUID();
             when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
-            when(shortCodeGenerator.generate()).thenReturn("abc123");
-            when(qrCodeRepository.existsByShortCode("abc123")).thenReturn(false);
             doThrow(new BadRequestException("QR code limit reached"))
                 .when(usageLimitService).assertCanCreateQrCode(userId);
 
