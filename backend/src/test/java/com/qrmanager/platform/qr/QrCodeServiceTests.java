@@ -144,8 +144,7 @@ class QrCodeServiceTests {
         void rejectsNonHttpUrl() {
             UUID userId = UUID.randomUUID();
             when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
-            when(shortCodeGenerator.generate()).thenReturn("xyz789");
-            when(qrCodeRepository.existsByShortCode("xyz789")).thenReturn(false);
+            // Note: shortCodeGenerator is NOT stubbed — validation fails before short code is generated
 
             CreateQrCodeRequest request = new CreateQrCodeRequest(
                 "Bad QR", "javascript:alert('xss')", "url", null, false, defaultStyle(), null, null
@@ -163,8 +162,7 @@ class QrCodeServiceTests {
         void rejectsFtpUrl() {
             UUID userId = UUID.randomUUID();
             when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
-            when(shortCodeGenerator.generate()).thenReturn("xyz789");
-            when(qrCodeRepository.existsByShortCode("xyz789")).thenReturn(false);
+            // Note: shortCodeGenerator is NOT stubbed — validation fails before short code is generated
 
             CreateQrCodeRequest request = new CreateQrCodeRequest(
                 "FTP QR", "ftp://files.example.com", "url", null, false, defaultStyle(), null, null
@@ -180,8 +178,7 @@ class QrCodeServiceTests {
         void rejectsBlankUrl() {
             UUID userId = UUID.randomUUID();
             when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
-            when(shortCodeGenerator.generate()).thenReturn("xyz789");
-            when(qrCodeRepository.existsByShortCode("xyz789")).thenReturn(false);
+            // Note: shortCodeGenerator is NOT stubbed — validation fails before short code is generated
 
             CreateQrCodeRequest request = new CreateQrCodeRequest(
                 "Blank QR", "   ", "url", null, false, defaultStyle(), null, null
@@ -196,8 +193,7 @@ class QrCodeServiceTests {
         void rejectsInvalidLifecycleWindow() {
             UUID userId = UUID.randomUUID();
             when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
-            when(shortCodeGenerator.generate()).thenReturn("xyz789");
-            when(qrCodeRepository.existsByShortCode("xyz789")).thenReturn(false);
+            // Note: shortCodeGenerator is NOT stubbed — lifecycle validation fails before short code is generated
 
             Instant start = Instant.now().plusSeconds(3600);
             Instant expiry = Instant.now().plusSeconds(1800); // expires BEFORE start
