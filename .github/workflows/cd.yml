@@ -9,20 +9,20 @@ name: cd
 #        SSH_HOST   — IP address or hostname of your server
 #        SSH_USER   — SSH username (e.g. ubuntu, deploy)
 #        SSH_KEY    — Private key content (the full -----BEGIN ... KEY----- block)
-#   3. Push to main — this workflow will SSH into your server and deploy.
+#   3. Add this repository variable:
+#        DEPLOY_ENABLED = true
+#   4. Push to main — this workflow will SSH into your server and deploy.
 #
 # HOW IT WORKS:
 #   • The ci.yml workflow builds and pushes Docker images to ghcr.io
-#   • This workflow SSHs into your server and runs:
-#       docker compose pull && docker compose up -d
+#   • This workflow SCPs the latest compose file to your server, then SSHs in
+#     and runs: docker compose pull && docker compose up -d
 #   • All images are pulled from ghcr.io (no build step on the server)
 #
 # PREREQUISITES ON THE SERVER:
 #   • Docker + Docker Compose v2 installed
-#   • docker-compose.yml present at ~/qr-manager/docker-compose.yml
 #   • .env file at ~/qr-manager/.env with production secrets
-#   • Server logged in to ghcr.io:
-#       echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
+#   • Nginx installed and configured as reverse proxy on port 80
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
@@ -35,13 +35,26 @@ jobs:
   deploy:
     name: Deploy to production
     runs-on: ubuntu-latest
-    # Only run if CI succeeded AND we have the SSH secret configured
+    # Only run if CI succeeded AND deploy is enabled
     if: >
       github.event.workflow_run.conclusion == 'success' &&
       vars.DEPLOY_ENABLED == 'true'
     environment: production
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Sync compose file and monitoring config to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "docker-compose.prod.yml,monitoring/"
+          target: "~/qr-manager/"
+          strip_components: 0
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -51,6 +64,13 @@ jobs:
           script: |
             set -e
             cd ~/qr-manager
+
+            # NOTE: If your ghcr.io packages are private, add a CR_PAT secret and
+            # uncomment the login line below:
+            # echo $CR_PAT | docker login ghcr.io -u GITHUB_USERNAME --password-stdin
+
+            # Use the prod compose file as the active compose file
+            cp docker-compose.prod.yml docker-compose.yml
 
             # Pull latest images for all services from ghcr.io
             docker compose pull
@@ -71,13 +91,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             set -e
-            # Wait up to 60 seconds for the frontend to be healthy
-            for i in $(seq 1 12); do
+            # Wait up to 90 seconds for the frontend to be healthy
+            for i in $(seq 1 18); do
               if curl -sf http://localhost:3000 > /dev/null 2>&1; then
                 echo "✅ Frontend is up"
                 exit 0
               fi
-              echo "Waiting... ($i/12)"
+              echo "Waiting... ($i/18)"
               sleep 5
             done
             echo "❌ Frontend did not become healthy in time"

@@ -12,6 +12,8 @@ spring:
       port: ${SPRING_DATA_REDIS_PORT:6379}
       password: ${SPRING_DATA_REDIS_PASSWORD:}
       timeout: ${SPRING_DATA_REDIS_TIMEOUT:5s}
+      ssl:
+        enabled: ${SPRING_DATA_REDIS_SSL_ENABLED:false}
       repositories:
         enabled: false
   rabbitmq:
@@ -50,8 +52,9 @@ spring:
             enable: true
 
 server:
-  port: ${SERVER_PORT:8080}
-  forward-headers-strategy: none
+  # Render injects PORT; fall back to SERVER_PORT, then 8080
+  port: ${PORT:${SERVER_PORT:8080}}
+  forward-headers-strategy: native
 
 management:
   health:

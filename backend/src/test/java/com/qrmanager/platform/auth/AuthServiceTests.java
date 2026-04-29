@@ -14,7 +14,6 @@ import com.qrmanager.platform.user.RefreshTokenRepository;
 import com.qrmanager.platform.user.Role;
 import com.qrmanager.platform.user.User;
 import com.qrmanager.platform.user.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

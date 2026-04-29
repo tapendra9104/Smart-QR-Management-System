@@ -10,7 +10,6 @@ import com.qrmanager.platform.integration.webhook.WebhookDispatchService;
 import com.qrmanager.platform.qr.dto.CreateQrCodeRequest;
 import com.qrmanager.platform.qr.dto.QrCodeResponse;
 import com.qrmanager.platform.qr.dto.QrCodeStyleDto;
-import com.qrmanager.platform.qr.dto.UpdateQrCodeRequest;
 import com.qrmanager.platform.user.Role;
 import com.qrmanager.platform.user.User;
 import com.qrmanager.platform.user.UserRepository;
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
