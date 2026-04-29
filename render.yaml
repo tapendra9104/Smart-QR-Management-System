@@ -23,7 +23,7 @@ services:
       - key: APP_REDIRECT_SIGNING_SECRET
         sync: false
       - key: APP_FRONTEND_URL
-        sync: false
+        value: https://smart-qr-management-system.vercel.app
 
       # Preferred for Neon/Render/Postgres provider connection strings.
       - key: DATABASE_URL
@@ -77,6 +77,6 @@ services:
       - key: GATEWAY_BACKEND_URL
         value: https://qr-manager-backend-dadr.onrender.com
       - key: APP_FRONTEND_URL
-        sync: false
+        value: https://smart-qr-management-system.vercel.app
       - key: JAVA_OPTS
         value: "-Xms64m -Xmx192m"
