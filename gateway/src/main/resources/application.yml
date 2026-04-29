@@ -7,13 +7,6 @@ spring:
         webflux:
           x-forwarded:
             for-enabled: false
-          routes:
-            - id: backend-api
-              uri: ${GATEWAY_BACKEND_URL:http://localhost:8080}
-              predicates:
-                - Path=/api/v1/**
-              filters:
-                - PreserveHostHeader
           globalcors:
             cors-configurations:
               '[/**]':
