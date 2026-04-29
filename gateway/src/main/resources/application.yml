@@ -30,7 +30,8 @@ spring:
                 allowCredentials: true
 
 server:
-  port: ${SERVER_PORT:8081}
+  # Render injects PORT; fall back to SERVER_PORT, then 8081
+  port: ${PORT:${SERVER_PORT:8081}}
   forward-headers-strategy: framework
 
 management:

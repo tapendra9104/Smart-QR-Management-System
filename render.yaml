@@ -1,0 +1,112 @@
+################################################################################
+# render.yaml — Render Blueprint for Smart QR Management System
+#
+# Deploys:
+#   1. qr-manager-backend  — Spring Boot API   (backend/Dockerfile)
+#   2. qr-manager-gateway  — Spring Cloud GW   (gateway/Dockerfile)
+#
+# Databases (set up manually on free services):
+#   - PostgreSQL → Neon   (https://neon.tech)
+#   - Redis      → Upstash (https://upstash.com)
+#
+# Feature flags (disabled to avoid needing RabbitMQ + ClickHouse):
+#   APP_MESSAGING_ENABLED=false
+#   APP_ANALYTICS_OLAP_ENABLED=false
+################################################################################
+
+services:
+  # ─────────────────────────────────────────────
+  # 1. BACKEND — Spring Boot API
+  # ─────────────────────────────────────────────
+  - type: web
+    name: qr-manager-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      # ── Secrets (set via Render Dashboard → Environment) ──────────────────
+      - key: APP_JWT_SECRET
+        sync: false   # set in Render dashboard — must be Base64, min 32 bytes
+      - key: APP_REDIRECT_SIGNING_SECRET
+        sync: false   # set in Render dashboard
+
+      # ── Feature Flags (disable optional infra) ───────────────────────────
+      - key: APP_MESSAGING_ENABLED
+        value: "false"
+      - key: APP_ANALYTICS_OLAP_ENABLED
+        value: "false"
+      - key: APP_MAIL_ENABLED
+        value: "false"
+
+      # ── Frontend URL (set after Vercel deploy) ───────────────────────────
+      - key: APP_FRONTEND_URL
+        sync: false   # e.g. https://your-app.vercel.app
+
+      # ── PostgreSQL (Neon) ─────────────────────────────────────────────────
+      - key: SPRING_DATASOURCE_URL
+        sync: false   # e.g. jdbc:postgresql://ep-xxx.neon.tech:5432/neondb?sslmode=require
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false   # from Neon dashboard
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false   # from Neon dashboard
+      - key: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+        value: org.postgresql.Driver
+
+      # ── Redis (Upstash) ───────────────────────────────────────────────────
+      - key: SPRING_DATA_REDIS_HOST
+        sync: false   # e.g. charming-condor-12345.upstash.io
+      - key: SPRING_DATA_REDIS_PORT
+        value: "6379"
+      - key: SPRING_DATA_REDIS_PASSWORD
+        sync: false   # from Upstash dashboard
+      - key: SPRING_DATA_REDIS_SSL_ENABLED
+        value: "true"
+      - key: SPRING_DATA_REDIS_TIMEOUT
+        value: "5s"
+
+      # ── JWT Config ────────────────────────────────────────────────────────
+      - key: APP_JWT_ACCESS_TOKEN_TTL_MINUTES
+        value: "1440"
+      - key: APP_JWT_REFRESH_TOKEN_TTL_DAYS
+        value: "7"
+
+      # ── Rate Limiting ─────────────────────────────────────────────────────
+      - key: APP_RATE_LIMIT_ENABLED
+        value: "true"
+      - key: APP_RATE_LIMIT_AUTH_REQUESTS_PER_MINUTE
+        value: "20"
+      - key: APP_RATE_LIMIT_PUBLIC_RESOLVE_REQUESTS_PER_MINUTE
+        value: "240"
+
+      # ── Redirect Security ─────────────────────────────────────────────────
+      - key: APP_REQUIRE_SIGNED_REDIRECTS
+        value: "true"
+
+      # ── JVM Memory (stay within free tier 512MB) ──────────────────────────
+      - key: JAVA_OPTS
+        value: "-Xms128m -Xmx384m"
+
+  # ─────────────────────────────────────────────
+  # 2. GATEWAY — Spring Cloud Gateway
+  # ─────────────────────────────────────────────
+  - type: web
+    name: qr-manager-gateway
+    runtime: docker
+    dockerfilePath: ./gateway/Dockerfile
+    dockerContext: ./gateway
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      # ── Backend URL (set after backend is deployed) ───────────────────────
+      - key: GATEWAY_BACKEND_URL
+        sync: false   # e.g. https://qr-manager-backend.onrender.com
+
+      # ── Frontend URL for CORS (set after Vercel deploy) ──────────────────
+      - key: APP_FRONTEND_URL
+        sync: false   # e.g. https://your-app.vercel.app
+
+      # ── JVM Memory ────────────────────────────────────────────────────────
+      - key: JAVA_OPTS
+        value: "-Xms64m -Xmx192m"
