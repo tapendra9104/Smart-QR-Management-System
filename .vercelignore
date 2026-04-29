@@ -1,0 +1,14 @@
+.next
+node_modules
+.env
+.env.*
+backend
+gateway
+.git
+.local-db
+.run-logs
+output
+monitoring
+k8s
+scripts
+__tests__

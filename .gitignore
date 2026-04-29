@@ -78,3 +78,4 @@ coverage/
 .nyc_output/
 test-results/
 playwright-report/
+.vercel

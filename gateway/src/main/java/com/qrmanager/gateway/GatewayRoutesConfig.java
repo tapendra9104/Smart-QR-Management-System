@@ -18,7 +18,6 @@ public class GatewayRoutesConfig {
         return builder.routes()
             .route("backend-api", route -> route
                 .path("/api/v1/**")
-                .filters(filters -> filters.preserveHostHeader())
                 .uri(resolveBackendUrl(backendUrl)))
             .build();
     }
