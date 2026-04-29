@@ -75,7 +75,7 @@ services:
     autoDeploy: true
     envVars:
       - key: GATEWAY_BACKEND_URL
-        sync: false
+        value: https://qr-manager-backend-dadr.onrender.com
       - key: APP_FRONTEND_URL
         sync: false
       - key: JAVA_OPTS
