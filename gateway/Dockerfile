@@ -16,8 +16,7 @@ RUN addgroup -S spring && adduser -S spring -G spring
 
 COPY --from=build --chown=spring:spring /workspace/target/gateway-0.0.1-SNAPSHOT.jar ./app.jar
 
-EXPOSE 8081
-
+# Render injects $PORT at runtime — do NOT hardcode 8081
 USER spring
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dserver.port=${PORT:-8081} -jar /app/app.jar"]
