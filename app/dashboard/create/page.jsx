@@ -19,7 +19,7 @@ import { DEFAULT_QR_STYLE } from "@/lib/types/qr";
 export default function CreateQRPage() {
     const router = useRouter();
     const [name, setName] = useState("");
-    const [content, setContent] = useState("https://");
+    const [content, setContent] = useState("");
     const [contentType, setContentType] = useState("url");
     const [isDynamic, setIsDynamic] = useState(false);
     const [destinationUrl, setDestinationUrl] = useState("");
