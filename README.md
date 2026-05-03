@@ -1,15 +1,33 @@
 # QR Manager
 
+[![Frontend](https://img.shields.io/badge/Frontend-Live%20on%20Vercel-black?logo=vercel)](https://qr-generator-alpha-ivory.vercel.app)
+[![Backend](https://img.shields.io/badge/Backend-Live%20on%20Render-46E3B7?logo=render)](https://qr-generator-backend-dadr.onrender.com/actuator/health)
+[![Gateway](https://img.shields.io/badge/Gateway-Live%20on%20Render-46E3B7?logo=render)](https://qr-generator-gateway-dadr.onrender.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Enterprise-grade QR Code Lifecycle & Analytics Management Platform built for production-scale deployment.
 
-- Frontend: React.js with Next.js 16, preserving the existing UI
-- Backend: Java 25 LTS + Spring Boot 3
-- Data: PostgreSQL + Redis
+## 🚀 Live Demo
+
+| Service | URL |
+|---|---|
+| 🌐 **Frontend (Vercel)** | https://qr-generator-alpha-ivory.vercel.app |
+| ⚙️ **Backend API (Render)** | https://qr-generator-backend-dadr.onrender.com |
+| 🔀 **API Gateway (Render)** | https://qr-generator-gateway-dadr.onrender.com |
+| ❤️ **Health Check** | https://qr-generator-backend-dadr.onrender.com/actuator/health |
+
+> **Note:** Services run on Render's free tier and may take ~30–60 seconds to wake up after inactivity (cold start).
+
+## Tech Stack
+
+- Frontend: React.js with Next.js 15, preserving the existing UI
+- Backend: Java 21 + Spring Boot 3
+- Data: PostgreSQL (Neon) + Redis
 - Messaging: RabbitMQ
 - OLAP analytics: ClickHouse
 - Edge/API entry: Spring Cloud Gateway
 - Security: Spring Security + JWT
-- Deployment: Docker, Kubernetes, and AWS-ready manifests for EKS
+- Deployment: Vercel (frontend), Render (backend), Docker & Kubernetes manifests included
 
 ## Architecture
 
